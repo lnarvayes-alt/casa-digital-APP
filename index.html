@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#A0522D">
+  <meta name="description" content="HogAR Digital - Tu Asistente de Organización del Hogar. Control de inventario, despensa, lista de supermercado y finanzas domésticas.">
+  <title>HogAR Digital | Tu Asistente de Casa</title>
+
+  <!-- Google Fonts: Fredoka & Comfortaa -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@500;700&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ========================================================
+       1. SPLASH SCREEN / ANIMACIÓN DE BIENVENIDA
+       ======================================================== -->
+  <aside id="splash-screen" class="splash-screen" aria-label="Pantalla de bienvenida" role="dialog" aria-modal="true">
+    <div class="splash-content">
+      <!-- Ícono central del Logo SVG Fiel y Detallado -->
+      <div class="splash-logo-container" id="splash-logo-box">
+        <svg class="hogar-logo-svg" viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg" aria-label="Logo HogAR Digital">
+          <defs>
+            <filter id="soft-shadow" x="-10%" y="-10%" width="120%" height="120%">
+              <feDropShadow dx="0" dy="4" stdDeviation="4" flood-opacity="0.18" flood-color="#000" />
+            </filter>
+            <linearGradient id="roofGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#B85D34" />
+              <stop offset="100%" stop-color="#8C4423" />
+            </linearGradient>
+            <linearGradient id="goldCoins" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#F9D776" />
+              <stop offset="100%" stop-color="#E2A63B" />
+            </linearGradient>
+          </defs>
+
+          <!-- Ondas de red WiFi sobre el techo -->
+          <g class="logo-wifi" stroke="#A0522D" stroke-width="3.5" stroke-linecap="round" fill="none">
+            <path d="M 110 38 A 28 28 0 0 1 150 38" opacity="0.6" />
+            <path d="M 100 28 A 42 42 0 0 1 160 28" opacity="0.8" />
+            <path d="M 90 18 A 56 56 0 0 1 170 18" />
+            <circle cx="130" cy="46" r="3" fill="#A0522D" stroke="none" />
+          </g>
+
+          <!-- Techo de la casa (#A0522D) con caída y aleros redondeados -->
+          <path d="M 130 52 L 235 120 C 239 123 236 128 231 128 L 29 128 C 24 128 21 123 25 120 Z" 
+                fill="url(#roofGrad)" filter="url(#soft-shadow)" stroke="#4A220F" stroke-width="2" stroke-linejoin="round" />
+          
+          <!-- Chimenea pequeña con acento -->
+          <rect x="180" y="65" width="16" height="24" rx="2" fill="#8C4423" stroke="#4A220F" stroke-width="1.5" />
+
+          <!-- Cuerpo / Paredes de la casa en Beige Claro con borde sienna -->
+          <rect x="42" y="124" width="176" height="114" rx="16" fill="#FFFDF8" stroke="#A0522D" stroke-width="4.5" filter="url(#soft-shadow)" />
+
+          <!-- Puerta o marco estilizado tenue -->
+          <path d="M 44 234 L 216 234" stroke="#A0522D" stroke-width="4" stroke-linecap="round" />
+
+          <!-- ==============================================
+               ÍCONOS INTERNOS DEL HOGAR DIGITAL:
+               1. Carrito de supermercado (Izquierda)
+               2. Frasco de medicina con cruz (Centro)
+               3. Monedas con flecha hacia arriba (Derecha)
+               ============================================== -->
+
+          <!-- 1. Carrito de Compras (Izquierda) -->
+          <g id="logo-cart" transform="translate(56, 142)">
+            <!-- Ruedas -->
+            <circle cx="14" cy="48" r="4.5" fill="#E35336" stroke="#000" stroke-width="1.2" />
+            <circle cx="34" cy="48" r="4.5" fill="#E35336" stroke="#000" stroke-width="1.2" />
+            <!-- Canasta y manija -->
+            <path d="M 2 12 L 10 12 L 16 36 L 38 36 L 44 18 L 13 18" fill="none" stroke="#E35336" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M 16 24 L 40 24 M 18 30 L 37 30" stroke="#F4A460" stroke-width="1.8" stroke-linecap="round" />
+          </g>
+
+          <!-- 2. Frasco de Medicina con Cruz (Centro) -->
+          <g id="logo-medicine" transform="translate(112, 138)">
+            <!-- Tapa -->
+            <rect x="8" y="4" width="20" height="7" rx="2.5" fill="#A0522D" stroke="#000" stroke-width="1.2" />
+            <!-- Cuerpo del frasco -->
+            <rect x="4" y="11" width="28" height="42" rx="7" fill="#F4A460" stroke="#A0522D" stroke-width="2.5" />
+            <!-- Etiqueta blanca con Cruz Roja -->
+            <rect x="7" y="20" width="22" height="24" rx="4" fill="#FFFFFF" />
+            <path d="M 18 24 L 18 40 M 11 32 L 25 32" stroke="#E35336" stroke-width="3.2" stroke-linecap="round" />
+          </g>
+
+          <!-- 3. Monedas con Flecha hacia Arriba (Derecha) -->
+          <g id="logo-coins" transform="translate(160, 142)">
+            <!-- Moneda 1 inferior -->
+            <ellipse cx="26" cy="46" rx="16" ry="6.5" fill="url(#goldCoins)" stroke="#8C4423" stroke-width="1.5" />
+            <!-- Moneda 2 media -->
+            <ellipse cx="26" cy="38" rx="16" ry="6.5" fill="url(#goldCoins)" stroke="#8C4423" stroke-width="1.5" />
+            <!-- Moneda 3 superior con relieve -->
+            <ellipse cx="26" cy="30" rx="16" ry="6.5" fill="url(#goldCoins)" stroke="#8C4423" stroke-width="1.5" />
+            <text x="26" y="33" text-anchor="middle" font-size="10" font-weight="bold" fill="#8C4423" font-family="'Fredoka', sans-serif">$</text>
+            <!-- Flecha verde/coral ascendente -->
+            <g transform="translate(16, 2)">
+              <path d="M 10 24 L 10 2 M 5 7 L 10 2 L 15 7" fill="none" stroke="#2E7D32" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" />
+            </g>
+          </g>
+        </svg>
+      </div>
+
+      <!-- Proceso de Carga: Spinner ocre giratorio que se extiende desde la base -->
+      <div class="splash-loader-wrapper" id="splash-loader">
+        <div class="splash-stem"></div>
+        <div class="splash-spinner"></div>
+      </div>
+
+      <!-- Textos de revelación con animación Slide-Up -->
+      <div class="splash-text-container" id="splash-text-box">
+        <h1 class="splash-title">HOGAR DIGITAL</h1>
+        <p class="splash-subtitle">Tu Asistente de Casa</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ========================================================
+       2. CONTENEDOR PRINCIPAL DE LA APLICACIÓN
+       ======================================================== -->
+  <div id="app" class="app-container">
+
+    <!-- CABECERA (HEADER) -->
+    <header class="app-header">
+      <div class="header-inner">
+        <!-- Cuadro 1: Casita normal sin texto (#A0522D, icono delineado #F5F5DC) -->
+        <button id="btn-header-home" class="header-box-btn" aria-label="Ir a Inicio" title="Inicio">
+          <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="#F5F5DC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>
+        </button>
+
+        <!-- Título central / Logo en miniatura en la cabecera -->
+        <div class="header-brand" id="btn-brand-home">
+          <span class="header-title-main">HogAR</span>
+          <span class="header-title-sub">Digital</span>
+        </div>
+
+        <!-- Cuadro 2: Campanita de notificaciones (#A0522D, icono delineado #F5F5DC) -->
+        <button id="btn-header-bell" class="header-box-btn notification-btn" aria-label="Ver Notificaciones y Alertas" title="Notificaciones">
+          <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="#F5F5DC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+          </svg>
+          <span id="bell-badge" class="bell-badge hidden">0</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- CUERPO PRINCIPAL DE VISTAS (SPA) -->
+    <main class="main-content">
+
+      <!-- ====================================================
+           VISTA 0: HOME PAGE (MENÚ PRINCIPAL)
+           ==================================================== -->
+      <section id="view-home" class="spa-view active-view">
+        <div class="home-hero">
+          <div class="home-badge-welcome">🏠 Gestión Doméstica Inteligente</div>
+          <h2 class="home-welcome-text">¿Qué deseas organizar hoy?</h2>
+          <p class="home-welcome-desc">Accede a tus inventarios, despensa de súper o controla tus gastos en segundos.</p>
+        </div>
+
+        <!-- Alerta Rápida en el Home si hay productos por vencer -->
+        <div id="home-alert-banner" class="home-alert-banner hidden">
+          <div class="alert-icon-wrap">⚠️</div>
+          <div class="alert-info">
+            <strong id="home-alert-count">0 productos</strong> por vencer en menos de 3 días.
+            <span class="alert-sub">Revísalos para no desperdiciar nada.</span>
+          </div>
+          <button id="btn-goto-expiring" class="btn-alert-action">Ver</button>
+        </div>
+
+        <!-- 3 BOTONES RECTANGULARES PRINCIPALES (INTERCALANDO COLORES) -->
+        <nav class="home-nav-cards">
+          <!-- 1. Botón Productos del Hogar (#E35336) -->
+          <button class="menu-card card-coral" id="nav-btn-products">
+            <div class="card-icon-circle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+              </svg>
+            </div>
+            <div class="card-text-group">
+              <h3 class="card-title">Productos del Hogar</h3>
+              <p class="card-subtitle">Inventario, cantidades y alertas de caducidad</p>
+            </div>
+            <div class="card-arrow">➔</div>
+          </button>
+
+          <!-- 2. Botón Supermercado (#F4A460) -->
+          <button class="menu-card card-peach" id="nav-btn-supermarket">
+            <div class="card-icon-circle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+              </svg>
+            </div>
+            <div class="card-text-group">
+              <h3 class="card-title">Supermercado</h3>
+              <p class="card-subtitle">Lista de compras interactiva y reposición</p>
+            </div>
+            <div class="card-arrow">➔</div>
+          </button>
+
+          <!-- 3. Botón Finanzas del Hogar (#E35336) -->
+          <button class="menu-card card-coral" id="nav-btn-finances">
+            <div class="card-icon-circle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="1" x2="12" y2="23"></line>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+              </svg>
+            </div>
+            <div class="card-text-group">
+              <h3 class="card-title">Finanzas del Hogar</h3>
+              <p class="card-subtitle">Balance, presupuestos y gráficos analíticos</p>
+            </div>
+            <div class="card-arrow">➔</div>
+          </button>
+        </nav>
+
+        <!-- Resumen rápido de estado -->
+        <section class="home-quick-stats">
+          <div class="stat-pill">
+            <span class="stat-number" id="quick-prod-count">0</span>
+            <span class="stat-label">Artículos</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-number" id="quick-shop-count">0</span>
+            <span class="stat-label">Por comprar</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-number" id="quick-balance">$0</span>
+            <span class="stat-label">Saldo Mes</span>
+          </div>
+        </section>
+      </section>
+
+      <!-- ====================================================
+           INTERFAZ 1: PRODUCTOS DEL HOGAR (INVENTARIO)
+           ==================================================== -->
+      <section id="view-products" class="spa-view">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <h2 class="section-title">Productos del Hogar</h2>
+            <p class="section-subtitle">Control de stock y fechas de vencimiento</p>
+          </div>
+          <button id="btn-open-add-product" class="btn-action-primary" title="Registrar nuevo producto">
+            <span class="btn-plus-icon">+</span> Nuevo
+          </button>
+        </div>
+
+        <!-- Filtros y Búsqueda -->
+        <div class="filter-bar">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="input-search-products" placeholder="Buscar producto...">
+          </div>
+          <div class="category-chips" id="prod-category-filters">
+            <button class="chip active" data-category="todos">Todos</button>
+            <button class="chip" data-category="Alimentos">🍎 Alimentos</button>
+            <button class="chip" data-category="Farmacia">💊 Farmacia</button>
+            <button class="chip" data-category="Limpieza">🧼 Limpieza</button>
+          </div>
+        </div>
+
+        <!-- Leyenda de Vencimiento -->
+        <div class="expiration-legend">
+          <span class="legend-item"><span class="dot dot-danger"></span> Vence en ≤ 3 días / Vencido</span>
+          <span class="legend-item"><span class="dot dot-ok"></span> En buen estado</span>
+        </div>
+
+        <!-- Listado de Tarjetas de Productos -->
+        <div id="products-list-container" class="products-grid">
+          <!-- Tarjetas renderizadas dinámicamente -->
+        </div>
+      </section>
+
+      <!-- ====================================================
+           INTERFAZ 2: SUPERMERCADO (LISTA DE COMPRAS)
+           ==================================================== -->
+      <section id="view-supermarket" class="spa-view">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <h2 class="section-title">Supermercado</h2>
+            <p class="section-subtitle">Tu lista de compras inteligente</p>
+          </div>
+        </div>
+
+        <!-- Botón Especial para Importar Productos Vencidos de Interfaz 1 -->
+        <div class="super-actions-bar">
+          <button id="btn-import-expired" class="btn-import-expired" title="Añade a la lista los productos vencidos o próximos a vencer">
+            <span class="icon">🔄</span> Importar Vencidos / Faltantes
+          </button>
+          <button id="btn-clear-completed" class="btn-subtle" title="Elimina de la lista los ítems marcados como comprados">
+            🧹 Limpiar Comprados
+          </button>
+        </div>
+
+        <!-- Formulario Rápido de Añadir a la Lista -->
+        <form id="form-quick-add-shop" class="quick-add-form">
+          <input type="text" id="shop-input-item" placeholder="Ej: Jabón de ropa, leche, arroz..." required>
+          <select id="shop-select-cat" aria-label="Categoría del producto">
+            <option value="Alimentos">Alimentos</option>
+            <option value="Limpieza">Limpieza</option>
+            <option value="Farmacia">Farmacia</option>
+            <option value="Varios">Varios</option>
+          </select>
+          <button type="submit" class="btn-quick-add" aria-label="Agregar">+</button>
+        </form>
+
+        <!-- Indicador de Progreso de Compras -->
+        <div class="shop-progress-card">
+          <div class="progress-info">
+            <span id="shop-progress-label">Progreso de compra</span>
+            <span id="shop-progress-percent">0%</span>
+          </div>
+          <div class="progress-bar-track">
+            <div id="shop-progress-fill" class="progress-bar-fill" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- Checklist Interactivo -->
+        <div class="checklist-container">
+          <ul id="supermarket-checklist" class="shopping-checklist">
+            <!-- Items renderizados dinámicamente -->
+          </ul>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           INTERFAZ 3: FINANZAS DEL HOGAR (DASHBOARD)
+           ==================================================== -->
+      <section id="view-finances" class="spa-view">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <h2 class="section-title">Finanzas del Hogar</h2>
+            <p class="section-subtitle">Control de ingresos, gastos y ahorros</p>
+          </div>
+          <button id="btn-open-add-finance" class="btn-action-primary" title="Registrar nuevo movimiento">
+            <span class="btn-plus-icon">+</span> Transacción
+          </button>
+        </div>
+
+        <!-- Métricas del Balance -->
+        <div class="finance-kpi-grid">
+          <div class="kpi-card kpi-income">
+            <span class="kpi-label">Ingresos</span>
+            <span class="kpi-value" id="kpi-total-income">$0</span>
+          </div>
+          <div class="kpi-card kpi-expense">
+            <span class="kpi-label">Gastos</span>
+            <span class="kpi-value" id="kpi-total-expense">$0</span>
+          </div>
+          <div class="kpi-card kpi-balance">
+            <span class="kpi-label">Balance</span>
+            <span class="kpi-value" id="kpi-balance">$0</span>
+          </div>
+        </div>
+
+        <!-- 3 GRÁFICOS INTERACTIVOS (CHART.JS) -->
+        <div class="charts-wrapper">
+          <!-- Gráfico 1: Ingresos vs Gastos -->
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <h3 class="chart-title">📊 1. Ingresos vs. Gastos</h3>
+              <span class="chart-tag">Global</span>
+            </div>
+            <div class="chart-canvas-container">
+              <canvas id="chart-income-expense"></canvas>
+            </div>
+          </div>
+
+          <!-- Gráfico 2: Gastos por Categoría -->
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <h3 class="chart-title">🍩 2. Gastos Mensuales por Categoría</h3>
+              <span class="chart-tag">Distribución</span>
+            </div>
+            <div class="chart-canvas-container">
+              <canvas id="chart-category-expenses"></canvas>
+            </div>
+          </div>
+
+          <!-- Gráfico 3: Gastos Semanales (Evolución) -->
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <h3 class="chart-title">📈 3. Gastos Semanales</h3>
+              <span class="chart-tag">Evolución</span>
+            </div>
+            <div class="chart-canvas-container">
+              <canvas id="chart-weekly-expenses"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lista de Últimas Transacciones -->
+        <div class="transactions-container">
+          <div class="transactions-header">
+            <h3 class="transactions-title">Últimos Movimientos</h3>
+          </div>
+          <ul id="transactions-list" class="transactions-list">
+            <!-- Items de transacción dinámicos -->
+          </ul>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- BARRA DE NAVEGACIÓN INFERIOR (ESTILO PWA MÓVIL) -->
+    <nav class="bottom-nav" aria-label="Navegación principal">
+      <button class="nav-tab active" data-target="view-home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span>Inicio</span>
+      </button>
+
+      <button class="nav-tab" data-target="view-products">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+        </svg>
+        <span>Hogar</span>
+      </button>
+
+      <button class="nav-tab" data-target="view-supermarket">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <span>Súper</span>
+      </button>
+
+      <button class="nav-tab" data-target="view-finances">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="1" x2="12" y2="23"></line>
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+        </svg>
+        <span>Finanzas</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- ========================================================
+       MODALES DE ACCIÓN RÁPIDA (ADD/EDIT/ALERTS)
+       ======================================================== -->
+
+  <!-- Modal 1: Agregar / Editar Producto del Hogar -->
+  <div id="modal-product" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-product-title">Nuevo Producto</h3>
+        <button class="modal-close-btn" data-close="modal-product">&times;</button>
+      </div>
+      <form id="form-product" class="modal-form">
+        <input type="hidden" id="prod-form-id">
+        
+        <div class="form-group">
+          <label for="prod-form-name">Nombre del Producto</label>
+          <input type="text" id="prod-form-name" required placeholder="Ej: Leche descremada, Paracetamol...">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="prod-form-qty">Cantidad</label>
+            <input type="number" id="prod-form-qty" min="0" step="1" required placeholder="1">
+          </div>
+          <div class="form-group">
+            <label for="prod-form-unit">Unidad</label>
+            <select id="prod-form-unit">
+              <option value="unidades">Unidades</option>
+              <option value="litros">Litros</option>
+              <option value="kg">Kilos</option>
+              <option value="cajas">Cajas</option>
+              <option value="paquetes">Paquetes</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="prod-form-category">Categoría</label>
+          <select id="prod-form-category" required>
+            <option value="Alimentos">🍎 Alimentos</option>
+            <option value="Farmacia">💊 Farmacia</option>
+            <option value="Limpieza">🧼 Limpieza</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="prod-form-expiry">Fecha de Vencimiento</label>
+          <input type="date" id="prod-form-expiry" required>
+          <small class="form-hint">Si vence en menos de 3 días, se alertará automáticamente.</small>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" data-close="modal-product">Cancelar</button>
+          <button type="submit" class="btn-submit">Guardar Producto</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 2: Registrar Movimiento Financiero -->
+  <div id="modal-finance" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-finance-title">Registrar Movimiento</h3>
+        <button class="modal-close-btn" data-close="modal-finance">&times;</button>
+      </div>
+      <form id="form-finance" class="modal-form">
+        <div class="form-group">
+          <label>Tipo de Operación</label>
+          <div class="segmented-control">
+            <label class="seg-option">
+              <input type="radio" name="finance-type" value="gasto" checked>
+              <span>Gasto 🔴</span>
+            </label>
+            <label class="seg-option">
+              <input type="radio" name="finance-type" value="ingreso">
+              <span>Ingreso 🟢</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="fin-form-concept">Concepto / Detalle</label>
+          <input type="text" id="fin-form-concept" required placeholder="Ej: Compra súper, Salario, Farmacia...">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="fin-form-amount">Monto ($)</label>
+            <input type="number" id="fin-form-amount" min="0.01" step="any" required placeholder="0.00">
+          </div>
+          <div class="form-group">
+            <label for="fin-form-date">Fecha</label>
+            <input type="date" id="fin-form-date" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="fin-form-category">Categoría</label>
+          <select id="fin-form-category" required>
+            <option value="Supermercado">🛒 Supermercado / Alimentos</option>
+            <option value="Servicios">💡 Servicios y Luz / Agua / Gas</option>
+            <option value="Farmacia">💊 Farmacia y Salud</option>
+            <option value="Hogar">🏠 Mantenimiento y Hogar</option>
+            <option value="Ingreso Salario">💼 Salario / Sueldo</option>
+            <option value="Otros">📦 Otros</option>
+          </select>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" data-close="modal-finance">Cancelar</button>
+          <button type="submit" class="btn-submit">Guardar Movimiento</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 3: Notificaciones y Alertas de Vencimiento -->
+  <div id="modal-alerts" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>🔔 Notificaciones de HogAR</h3>
+        <button class="modal-close-btn" data-close="modal-alerts">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="alerts-intro">Artículos que requieren atención inmediata:</p>
+        <ul id="alerts-modal-list" class="alerts-list">
+          <!-- Items generados dinámicamente -->
+        </ul>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-submit full-width" data-close="modal-alerts">Entendido</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="app.js"></script>
+</body>
+</html>

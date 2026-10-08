@@ -1,0 +1,1468 @@
+/* ========================================================
+   HOGAR DIGITAL - SISTEMA DE DISEÑO Y HOJA DE ESTILOS (CSS3)
+   Paleta: #F5F5DC (Fondo), #E35336 (Coral), #F4A460 (Durazno), #A0522D (Sienna)
+   ======================================================== */
+
+:root {
+  --bg-primary: #F5F5DC;
+  --bg-card: #FFFDF8;
+  --color-coral: #E35336;
+  --color-peach: #F4A460;
+  --color-sienna: #A0522D;
+  --color-sienna-dark: #7A3D22;
+  --color-cream: #F5F5DC;
+  --color-text-dark: #1E1E1E;
+  --color-text-muted: #5C5248;
+  --color-danger: #D32F2F;
+  --color-danger-bg: #FEE8E7;
+  --color-success: #2E7D32;
+  --color-success-bg: #E8F5E9;
+  --color-border: #E8DECE;
+  
+  --radius-card: 18px;
+  --radius-btn: 14px;
+  --radius-sm: 8px;
+  --radius-full: 999px;
+
+  --shadow-soft: 0 4px 16px rgba(160, 82, 45, 0.08);
+  --shadow-card: 0 6px 18px rgba(0, 0, 0, 0.06);
+  --shadow-hover: 0 8px 24px rgba(227, 83, 54, 0.18);
+  --shadow-press: 0 2px 6px rgba(0, 0, 0, 0.12);
+
+  --font-main: 'Fredoka', 'Comfortaa', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-accent: 'Comfortaa', 'Fredoka', cursive, sans-serif;
+}
+
+/* Reset y configuraciones globales */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100%;
+  background-color: var(--bg-primary);
+  font-family: var(--font-main);
+  color: var(--color-text-dark);
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+/* Tipografía Principal con Delineado Requerido */
+h1, h2, h3, .card-title, .splash-title, .header-title-main {
+  font-family: var(--font-main);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* Delineado en títulos principales según requerimiento de diseño */
+.stroke-black {
+  -webkit-text-stroke: 1px black;
+  text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+}
+
+/* ========================================================
+   ANIMACIÓN DE SPLASH SCREEN
+   ======================================================== */
+.splash-screen {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--bg-primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s ease;
+}
+
+.splash-screen.fade-out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.splash-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  position: relative;
+  max-width: 360px;
+  width: 100%;
+}
+
+/* Ícono Central de la Casa */
+.splash-logo-container {
+  width: 210px;
+  height: 210px;
+  animation: logoFloat 2.2s ease-in-out infinite alternate;
+  transform-origin: center bottom;
+}
+
+.hogar-logo-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+@keyframes logoFloat {
+  0% { transform: translateY(0px) scale(1); }
+  100% { transform: translateY(-6px) scale(1.02); }
+}
+
+/* Spinner de Carga: Se extiende hacia abajo desde la base de la casita */
+.splash-loader-wrapper {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.splash-loader-wrapper.fade-out {
+  opacity: 0;
+  transform: scale(0.7);
+  pointer-events: none;
+}
+
+/* Línea ocre que conecta la base */
+.splash-stem {
+  width: 3px;
+  height: 18px;
+  background: var(--color-sienna);
+  border-radius: 2px;
+}
+
+/* Círculo girando sobre su propio eje */
+.splash-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3.5px solid rgba(160, 82, 45, 0.2);
+  border-top-color: var(--color-sienna);
+  border-right-color: var(--color-sienna);
+  border-radius: 50%;
+  animation: spinCircle 0.85s linear infinite;
+  margin-top: 2px;
+}
+
+@keyframes spinCircle {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Textos de revelación con animación Slide-Up */
+.splash-text-container {
+  margin-top: 16px;
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.5s cubic-bezier(0.2, 0.9, 0.3, 1), transform 0.5s cubic-bezier(0.2, 0.9, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.splash-text-container.slide-up {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.splash-title {
+  color: var(--color-coral);
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  margin-bottom: 4px;
+  -webkit-text-stroke: 1.2px black;
+  text-shadow: 2px 2px 0 #000;
+}
+
+.splash-subtitle {
+  color: #000000;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  font-family: var(--font-accent);
+}
+
+/* ========================================================
+   ESTRUCTURA DE LA APLICACIÓN Y CABECERA (HEADER)
+   ======================================================== */
+.app-container {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.04);
+}
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: rgba(245, 245, 220, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 12px 18px;
+  border-bottom: 1.5px solid rgba(160, 82, 45, 0.15);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Cajas Superiores de Cabecera (#A0522D con bordes redondeados e iconos #F5F5DC) */
+.header-box-btn {
+  width: 44px;
+  height: 44px;
+  background-color: var(--color-sienna);
+  border: none;
+  border-radius: var(--radius-btn);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  box-shadow: var(--shadow-press);
+  transition: transform 0.15s ease, background-color 0.2s ease;
+}
+
+.header-box-btn:hover {
+  background-color: var(--color-sienna-dark);
+  transform: translateY(-2px);
+}
+
+.header-box-btn:active {
+  transform: scale(0.94);
+}
+
+.header-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.header-brand {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.header-title-main {
+  font-size: 1.45rem;
+  color: var(--color-coral);
+  -webkit-text-stroke: 1px black;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.header-title-sub {
+  font-size: 1.15rem;
+  color: var(--color-sienna);
+  font-weight: 700;
+}
+
+/* Badge de Notificaciones */
+.bell-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background-color: var(--color-danger);
+  color: #FFF;
+  font-size: 0.72rem;
+  font-weight: 700;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border: 2px solid var(--bg-primary);
+  box-shadow: 0 2px 6px rgba(211, 47, 47, 0.4);
+  animation: pulseBadge 1.8s infinite;
+}
+
+@keyframes pulseBadge {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ========================================================
+   CONTENIDO PRINCIPAL Y SPA VISTAS
+   ======================================================== */
+.main-content {
+  flex: 1;
+  padding: 16px 18px 90px 18px; /* Espacio para barra inferior */
+}
+
+.spa-view {
+  display: none;
+  animation: fadeInView 0.3s ease forwards;
+}
+
+.spa-view.active-view {
+  display: block;
+}
+
+@keyframes fadeInView {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========================================================
+   HOME VIEW (PÁGINA DE INICIO)
+   ======================================================== */
+.home-hero {
+  margin-bottom: 18px;
+  text-align: left;
+}
+
+.home-badge-welcome {
+  display: inline-block;
+  background-color: rgba(160, 82, 45, 0.12);
+  color: var(--color-sienna);
+  font-weight: 600;
+  font-size: 0.8rem;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  margin-bottom: 8px;
+}
+
+.home-welcome-text {
+  font-size: 1.55rem;
+  color: var(--color-text-dark);
+  line-height: 1.25;
+  margin-bottom: 4px;
+}
+
+.home-welcome-desc {
+  font-size: 0.92rem;
+  color: var(--color-text-muted);
+}
+
+/* Banner de Alerta en Home */
+.home-alert-banner {
+  background: linear-gradient(135deg, #FFF3F0 0%, #FEE8E7 100%);
+  border: 1.5px solid rgba(211, 47, 47, 0.3);
+  border-radius: var(--radius-btn);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 12px rgba(211, 47, 47, 0.1);
+  animation: slideInDown 0.3s ease;
+}
+
+.alert-icon-wrap {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+
+.alert-info {
+  flex: 1;
+  font-size: 0.88rem;
+  color: #7B1E1E;
+}
+
+.alert-info strong {
+  color: var(--color-danger);
+}
+
+.alert-sub {
+  display: block;
+  font-size: 0.78rem;
+  color: #8C4423;
+  margin-top: 1px;
+}
+
+.btn-alert-action {
+  background-color: var(--color-danger);
+  color: white;
+  border: none;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: var(--font-main);
+  transition: transform 0.15s ease;
+}
+
+.btn-alert-action:active {
+  transform: scale(0.95);
+}
+
+/* NAVEGACIÓN PRINCIPAL: 3 BOTONES RECTANGULARES INTERCALANDO COLORES */
+.home-nav-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.menu-card {
+  width: 100%;
+  border: none;
+  border-radius: var(--radius-btn);
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  text-align: left;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.menu-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+}
+
+.menu-card:active {
+  transform: scale(0.98);
+}
+
+/* Intercalado de Colores: Botón 1 (#E35336), Botón 2 (#F4A460), Botón 3 (#E35336) */
+.card-coral {
+  background-color: var(--color-coral);
+  color: var(--color-cream);
+}
+
+.card-peach {
+  background-color: var(--color-peach);
+  color: var(--color-cream);
+}
+
+.card-icon-circle {
+  width: 48px;
+  height: 48px;
+  background-color: rgba(255, 255, 255, 0.22);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #FFF;
+}
+
+.card-icon-circle svg {
+  width: 26px;
+  height: 26px;
+}
+
+.card-text-group {
+  flex: 1;
+}
+
+/* Requisito: Texto en #F5F5DC con borde negro */
+.card-title {
+  font-size: 1.25rem;
+  color: var(--color-cream);
+  -webkit-text-stroke: 1px black;
+  text-shadow: 1px 1px 0 #000;
+  margin-bottom: 2px;
+}
+
+.card-subtitle {
+  font-size: 0.84rem;
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 500;
+}
+
+.card-arrow {
+  font-size: 1.2rem;
+  color: #FFF;
+  opacity: 0.8;
+  font-weight: bold;
+}
+
+/* Resumen Rápido de Estadísticas */
+.home-quick-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.stat-pill {
+  background-color: var(--bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-btn);
+  padding: 12px 8px;
+  text-align: center;
+  box-shadow: var(--shadow-soft);
+}
+
+.stat-number {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-sienna);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+/* ========================================================
+   CABECERAS DE SECCIONES INTERNAS
+   ======================================================== */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 1.35rem;
+  color: var(--color-coral);
+  -webkit-text-stroke: 1px black;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.section-subtitle {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+
+.btn-action-primary {
+  background-color: var(--color-coral);
+  color: var(--color-cream);
+  border: none;
+  border-radius: var(--radius-btn);
+  padding: 9px 15px;
+  font-family: var(--font-main);
+  font-weight: 700;
+  font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(227, 83, 54, 0.3);
+  -webkit-text-stroke: 0.6px black;
+  text-shadow: 1px 1px 0 #000;
+  transition: transform 0.15s ease, background-color 0.2s ease;
+}
+
+.btn-action-primary:hover {
+  background-color: #c94429;
+}
+
+.btn-action-primary:active {
+  transform: scale(0.95);
+}
+
+.btn-plus-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+/* ========================================================
+   INTERFAZ 1: PRODUCTOS DEL HOGAR (INVENTARIO)
+   ======================================================== */
+.filter-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.search-box {
+  position: relative;
+  width: 100%;
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.95rem;
+  opacity: 0.6;
+}
+
+.search-box input {
+  width: 100%;
+  background-color: var(--bg-card);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-btn);
+  padding: 10px 14px 10px 38px;
+  font-family: var(--font-main);
+  font-size: 0.9rem;
+  color: var(--color-text-dark);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.search-box input:focus {
+  border-color: var(--color-coral);
+}
+
+.category-chips {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.category-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.chip {
+  background-color: var(--bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  padding: 6px 14px;
+  font-family: var(--font-main);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.chip.active {
+  background-color: var(--color-sienna);
+  color: var(--color-cream);
+  border-color: var(--color-sienna);
+}
+
+.expiration-legend {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 12px;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot-danger {
+  background-color: var(--color-danger);
+  box-shadow: 0 0 6px rgba(211, 47, 47, 0.5);
+}
+
+.dot-ok {
+  background-color: var(--color-success);
+}
+
+/* Grid de Tarjetas de Productos */
+.products-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Tarjeta de Producto */
+.product-card {
+  background-color: var(--bg-card);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-btn);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+}
+
+.product-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
+}
+
+/* LÓGICA JS: Resaltar la tarjeta en rojo si vence en menos de 3 días */
+.product-card.expiring-alert {
+  background-color: var(--color-danger-bg);
+  border: 2px solid var(--color-danger);
+  box-shadow: 0 4px 14px rgba(211, 47, 47, 0.16);
+}
+
+.product-info-main {
+  flex: 1;
+}
+
+.product-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.product-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text-dark);
+}
+
+.product-badge-cat {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background-color: rgba(160, 82, 45, 0.1);
+  color: var(--color-sienna);
+}
+
+.product-meta {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.product-expiry {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+}
+
+.expiring-alert .product-expiry {
+  color: var(--color-danger);
+  font-weight: 700;
+}
+
+.product-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-icon-action {
+  background: none;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  transition: background-color 0.15s;
+}
+
+.btn-icon-action:hover {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+.btn-icon-action.delete:hover {
+  color: var(--color-danger);
+  background-color: var(--color-danger-bg);
+}
+
+/* ========================================================
+   INTERFAZ 2: SUPERMERCADO (LISTA DE COMPRAS)
+   ======================================================== */
+.super-actions-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.btn-import-expired {
+  flex: 1;
+  background-color: var(--color-peach);
+  color: var(--color-cream);
+  border: none;
+  border-radius: var(--radius-btn);
+  padding: 10px 14px;
+  font-family: var(--font-main);
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  -webkit-text-stroke: 0.6px black;
+  text-shadow: 1px 1px 0 #000;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.15s ease, background-color 0.2s ease;
+}
+
+.btn-import-expired:hover {
+  background-color: #e5934a;
+}
+
+.btn-import-expired:active {
+  transform: scale(0.96);
+}
+
+.btn-subtle {
+  background-color: var(--bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-btn);
+  padding: 10px 14px;
+  font-family: var(--font-main);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.btn-subtle:hover {
+  background-color: #EEE8DC;
+}
+
+/* Formulario rápido para añadir al Súper */
+.quick-add-form {
+  display: flex;
+  gap: 8px;
+  background-color: var(--bg-card);
+  padding: 6px;
+  border-radius: var(--radius-btn);
+  border: 1.5px solid var(--color-border);
+  margin-bottom: 16px;
+}
+
+.quick-add-form input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 8px 12px;
+  font-family: var(--font-main);
+  font-size: 0.9rem;
+  background: transparent;
+}
+
+.quick-add-form select {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 6px 8px;
+  font-family: var(--font-main);
+  font-size: 0.8rem;
+  background-color: var(--bg-primary);
+  color: var(--color-text-dark);
+}
+
+.btn-quick-add {
+  background-color: var(--color-coral);
+  color: white;
+  border: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  font-size: 1.4rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease;
+}
+
+.btn-quick-add:active {
+  transform: scale(0.92);
+}
+
+/* Progreso de la compra */
+.shop-progress-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-btn);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-soft);
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  margin-bottom: 6px;
+}
+
+.progress-bar-track {
+  width: 100%;
+  height: 8px;
+  background-color: #E8DECE;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-peach), var(--color-coral));
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease;
+}
+
+/* Checklist de Compras */
+.shopping-checklist {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.checklist-item {
+  background-color: var(--bg-card);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-btn);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: var(--shadow-soft);
+  transition: all 0.2s ease;
+}
+
+.checklist-item.completed {
+  background-color: rgba(232, 222, 206, 0.4);
+  border-color: #DDD2BF;
+  opacity: 0.7;
+}
+
+.item-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+/* Custom Checkbox */
+.custom-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--color-sienna);
+  border-radius: 6px;
+  outline: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: background-color 0.2s;
+  flex-shrink: 0;
+}
+
+.custom-checkbox:checked {
+  background-color: var(--color-coral);
+  border-color: var(--color-coral);
+}
+
+.custom-checkbox:checked::after {
+  content: '✓';
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.item-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-dark);
+  transition: color 0.2s;
+}
+
+.checklist-item.completed .item-name {
+  text-decoration: line-through;
+  color: var(--color-text-muted);
+}
+
+.item-cat-tag {
+  font-size: 0.72rem;
+  background-color: rgba(244, 164, 96, 0.2);
+  color: var(--color-sienna);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+}
+
+/* ========================================================
+   INTERFAZ 3: FINANZAS DEL HOGAR (DASHBOARD & CHART.JS)
+   ======================================================== */
+.finance-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.kpi-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-btn);
+  padding: 12px 10px;
+  text-align: center;
+  box-shadow: var(--shadow-soft);
+}
+
+.kpi-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-bottom: 2px;
+}
+
+.kpi-value {
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.kpi-income .kpi-value {
+  color: var(--color-success);
+}
+
+.kpi-expense .kpi-value {
+  color: var(--color-danger);
+}
+
+.kpi-balance .kpi-value {
+  color: var(--color-sienna);
+}
+
+/* Contenedores de Gráficos Chart.js */
+.charts-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.chart-card {
+  background-color: var(--bg-card);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-btn);
+  padding: 16px;
+  box-shadow: var(--shadow-soft);
+}
+
+.chart-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.chart-title {
+  font-size: 1rem;
+  color: var(--color-sienna);
+  font-weight: 700;
+}
+
+.chart-tag {
+  font-size: 0.72rem;
+  font-weight: 600;
+  background-color: rgba(160, 82, 45, 0.1);
+  color: var(--color-sienna);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.chart-canvas-container {
+  position: relative;
+  width: 100%;
+  height: 230px; /* Altura controlada para Chart.js */
+}
+
+/* Lista de Transacciones */
+.transactions-container {
+  background-color: var(--bg-card);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-btn);
+  padding: 16px;
+  box-shadow: var(--shadow-soft);
+}
+
+.transactions-title {
+  font-size: 1rem;
+  color: var(--color-text-dark);
+  margin-bottom: 12px;
+}
+
+.transactions-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.transaction-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--color-border);
+}
+
+.transaction-item:last-child {
+  border-bottom: none;
+}
+
+.trans-desc-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.trans-title {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--color-text-dark);
+}
+
+.trans-date {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.trans-amount {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.trans-amount.expense {
+  color: var(--color-danger);
+}
+
+.trans-amount.income {
+  color: var(--color-success);
+}
+
+/* ========================================================
+   BARRA DE NAVEGACIÓN INFERIOR (PWA MÓVIL)
+   ======================================================== */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  background-color: rgba(255, 253, 248, 0.96);
+  backdrop-filter: blur(12px);
+  border-top: 1.5px solid var(--color-border);
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 12px 14px 12px;
+  z-index: 90;
+}
+
+.nav-tab {
+  background: none;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-family: var(--font-main);
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: var(--radius-btn);
+  transition: all 0.2s ease;
+}
+
+.nav-tab svg {
+  width: 22px;
+  height: 22px;
+  transition: transform 0.2s ease;
+}
+
+.nav-tab.active {
+  color: var(--color-coral);
+  background-color: rgba(227, 83, 54, 0.08);
+}
+
+.nav-tab.active svg {
+  transform: translateY(-2px);
+}
+
+/* ========================================================
+   MODALES Y FORMULARIOS
+   ======================================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeInModal 0.25s ease;
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-card {
+  background-color: var(--bg-card);
+  width: 100%;
+  max-width: 420px;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.22);
+  border: 1px solid var(--color-border);
+  animation: slideUpModal 0.25s cubic-bezier(0.2, 0.8, 0.3, 1);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+@keyframes slideUpModal {
+  from { transform: translateY(20px) scale(0.97); }
+  to { transform: translateY(0) scale(1); }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 10px;
+}
+
+.modal-header h3 {
+  font-size: 1.2rem;
+  color: var(--color-sienna);
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-text-dark);
+}
+
+.form-group input,
+.form-group select {
+  background-color: var(--bg-primary);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-btn);
+  padding: 10px 14px;
+  font-family: var(--font-main);
+  font-size: 0.9rem;
+  color: var(--color-text-dark);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: var(--color-coral);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.form-hint {
+  font-size: 0.75rem;
+  color: var(--color-sienna);
+  margin-top: 2px;
+}
+
+/* Control segmentado para Tipo de Operación */
+.segmented-control {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.seg-option {
+  position: relative;
+  cursor: pointer;
+}
+
+.seg-option input {
+  position: absolute;
+  opacity: 0;
+}
+
+.seg-option span {
+  display: block;
+  text-align: center;
+  padding: 10px;
+  border-radius: var(--radius-btn);
+  background-color: var(--bg-primary);
+  border: 1.5px solid var(--color-border);
+  font-weight: 700;
+  font-size: 0.88rem;
+  transition: all 0.2s ease;
+}
+
+.seg-option input:checked + span {
+  background-color: var(--color-coral);
+  color: white;
+  border-color: var(--color-coral);
+  box-shadow: 0 4px 10px rgba(227, 83, 54, 0.25);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.btn-cancel {
+  flex: 1;
+  background-color: transparent;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-btn);
+  padding: 11px;
+  font-family: var(--font-main);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.btn-submit {
+  flex: 2;
+  background-color: var(--color-coral);
+  color: var(--color-cream);
+  border: none;
+  border-radius: var(--radius-btn);
+  padding: 11px;
+  font-family: var(--font-main);
+  font-weight: 700;
+  font-size: 0.92rem;
+  cursor: pointer;
+  -webkit-text-stroke: 0.5px black;
+  text-shadow: 1px 1px 0 #000;
+  box-shadow: 0 4px 12px rgba(227, 83, 54, 0.3);
+  transition: transform 0.15s ease;
+}
+
+.btn-submit.full-width {
+  flex: 1;
+}
+
+.btn-submit:active {
+  transform: scale(0.97);
+}
+
+/* Modal de Alertas */
+.alerts-intro {
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+  margin-bottom: 12px;
+}
+
+.alerts-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.alert-item-row {
+  background-color: var(--color-danger-bg);
+  border: 1px solid rgba(211, 47, 47, 0.3);
+  border-radius: var(--radius-btn);
+  padding: 10px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.alert-item-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #7B1E1E;
+}
+
+.alert-item-days {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-danger);
+}
+
+/* Estado Vacío / Empty State */
+.empty-state {
+  text-align: center;
+  padding: 36px 16px;
+  color: var(--color-text-muted);
+}
+
+.empty-state-icon {
+  font-size: 2.5rem;
+  margin-bottom: 8px;
+  opacity: 0.7;
+}
+
+.empty-state-text {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
