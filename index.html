@@ -15,6 +15,9 @@
   <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
+  <!-- Tesseract.js OCR CDN para escaneo automático de boletas -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
   <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="styles.css">
@@ -244,6 +247,21 @@
             <span class="stat-label">Saldo Mes</span>
           </div>
         </section>
+
+        <!-- Tarjeta de Salario y Presupuesto del Usuario en Home -->
+        <section class="home-salary-widget" id="home-salary-widget">
+          <div class="salary-widget-inner">
+            <div class="salary-icon-wrap">💰</div>
+            <div class="salary-details">
+              <span class="salary-badge-sub">Tu Presupuesto y Salario</span>
+              <div class="salary-main-amount" id="home-salary-display">Salario: Sin configurar</div>
+              <p class="salary-helper-text" id="home-salary-helper">Toca para ingresar tu salario o monto disponible.</p>
+            </div>
+            <button id="btn-home-salary-action" class="btn-salary-pill" title="Configurar Salario">
+              ✏️ Configurar
+            </button>
+          </div>
+        </section>
       </section>
 
       <!-- ====================================================
@@ -339,79 +357,240 @@
       </section>
 
       <!-- ====================================================
-           INTERFAZ 3: FINANZAS DEL HOGAR (DASHBOARD)
+           INTERFAZ 3: FINANZAS DEL HOGAR (REGISTRO Y DASHBOARD)
            ==================================================== -->
       <section id="view-finances" class="spa-view">
         <div class="section-header">
           <div class="section-title-wrap">
             <h2 class="section-title">Finanzas del Hogar</h2>
-            <p class="section-subtitle">Control de ingresos, gastos y ahorros</p>
+            <p class="section-subtitle">Gestión de boletas, gastos y presupuesto</p>
           </div>
-          <button id="btn-open-add-finance" class="btn-action-primary" title="Registrar nuevo movimiento">
-            <span class="btn-plus-icon">+</span> Transacción
+          <button id="btn-open-add-finance" class="btn-action-primary" title="Registrar movimiento manual">
+            <span class="btn-plus-icon">+</span> Manual
           </button>
         </div>
 
-        <!-- Métricas del Balance -->
-        <div class="finance-kpi-grid">
-          <div class="kpi-card kpi-income">
-            <span class="kpi-label">Ingresos</span>
-            <span class="kpi-value" id="kpi-total-income">$0</span>
+        <!-- PESTAÑAS SUB-NAVEGACIÓN DE FINANZAS -->
+        <div class="finance-subtabs" role="tablist">
+          <button class="finance-tab-btn active" id="tab-btn-scan" data-fin-tab="fin-tab-scan">
+            📸 Cargar Monto & Boletas
+          </button>
+          <button class="finance-tab-btn" id="tab-btn-summary" data-fin-tab="fin-tab-summary">
+            📊 Resumen y Balance
+          </button>
+        </div>
+
+        <!-- ====================================================
+             PESTAÑA 1: CARGAR MONTO & SACAR FOTO A BOLETAS
+             (Aparece limpia, sin números predeterminados)
+             ==================================================== -->
+        <div id="fin-tab-scan" class="finance-subtab-content active">
+          
+          <!-- 1. BLOQUE: PONER SU MONTO / SALARIO -->
+          <div class="finance-card setup-amount-card">
+            <div class="card-badge-icon">💰</div>
+            <div class="setup-amount-header">
+              <h3 class="finance-card-title">Tu Salario o Monto Disponible</h3>
+              <p class="finance-card-desc">Indica el dinero que dispones este mes para calcular tu saldo restante.</p>
+            </div>
+            
+            <form id="form-set-salary" class="set-salary-form">
+              <div class="salary-input-wrapper">
+                <span class="currency-symbol">$</span>
+                <input type="number" id="input-finance-salary" placeholder="Ej: 350000" min="0" step="any" required>
+              </div>
+              <button type="submit" id="btn-save-salary" class="btn-primary-glow">
+                💾 Guardar Monto
+              </button>
+            </form>
+
+            <div id="salary-saved-status" class="salary-saved-status hidden">
+              <div class="status-info">
+                <span class="status-label">Monto asignado actual:</span>
+                <strong class="status-amount" id="saved-salary-amount">$0</strong>
+              </div>
+              <button type="button" id="btn-edit-saved-salary" class="btn-subtle-edit">
+                ✏️ Cambiar
+              </button>
+            </div>
           </div>
-          <div class="kpi-card kpi-expense">
-            <span class="kpi-label">Gastos</span>
-            <span class="kpi-value" id="kpi-total-expense">$0</span>
+
+          <!-- 2. BLOQUE: SACAR FOTO CON LA CÁMARA A LAS BOLETAS -->
+          <div class="finance-card scan-receipt-card">
+            <div class="card-badge-icon">🧾</div>
+            <div class="scan-receipt-header">
+              <h3 class="finance-card-title">Escanear Boletas con la Cámara</h3>
+              <p class="finance-card-desc">Saca una foto a tu ticket o boleta y la aplicación registrará el movimiento automáticamente.</p>
+            </div>
+
+            <!-- Botones de Acción de Cámara -->
+            <div class="scan-actions-grid">
+              <button type="button" id="btn-open-camera" class="btn-scan-main">
+                <div class="btn-scan-icon">📷</div>
+                <div class="btn-scan-labels">
+                  <span class="scan-btn-title">Sacar Foto con Cámara</span>
+                  <span class="scan-btn-sub">Apunta a la boleta o ticket</span>
+                </div>
+              </button>
+
+              <button type="button" id="btn-upload-receipt" class="btn-scan-secondary">
+                <span class="upload-icon">📁</span>
+                <span>Subir desde Galería</span>
+              </button>
+            </div>
+
+            <!-- Inputs de archivo ocultos (1 para cámara nativa / fallback, 1 para galería) -->
+            <input type="file" id="input-receipt-camera" accept="image/*" capture="environment" class="hidden-input">
+            <input type="file" id="input-receipt-gallery" accept="image/*" class="hidden-input">
+
+            <!-- ZONA DE PROCESAMIENTO / RESULTADO DEL ESCANEO -->
+            <div id="receipt-scan-feedback" class="receipt-scan-feedback hidden">
+              <!-- Previsualización con efecto de escaneo láser -->
+              <div class="receipt-preview-container">
+                <img id="receipt-preview-img" alt="Boleta escaneada" class="receipt-preview-img">
+                <div id="scan-laser-beam" class="scan-laser-beam"></div>
+                <button type="button" id="btn-cancel-receipt" class="btn-discard-receipt" title="Descartar">✕</button>
+              </div>
+
+              <!-- Estado / Animación de Análisis -->
+              <div id="scan-status-indicator" class="scan-status-indicator">
+                <div class="scanner-spinner"></div>
+                <span id="scan-status-text">Analizando ticket y detectando monto...</span>
+              </div>
+
+              <!-- Datos Detectados Listos para Registrar -->
+              <div id="detected-receipt-data" class="detected-receipt-data hidden">
+                <div class="detected-badge">✨ Datos Detectados de la Boleta</div>
+                <form id="form-confirm-receipt" class="detected-fields-form">
+                  <div class="detected-field-group highlight-field">
+                    <label for="receipt-detected-amount">Monto Detectado ($):</label>
+                    <div class="detected-amount-input-box">
+                      <span class="symbol">$</span>
+                      <input type="number" id="receipt-detected-amount" step="any" required>
+                    </div>
+                  </div>
+
+                  <div class="detected-row">
+                    <div class="detected-field-group">
+                      <label for="receipt-detected-concept">Comercio / Detalle:</label>
+                      <input type="text" id="receipt-detected-concept" required>
+                    </div>
+                    <div class="detected-field-group">
+                      <label for="receipt-detected-category">Categoría:</label>
+                      <select id="receipt-detected-category">
+                        <option value="Supermercado">🛒 Supermercado</option>
+                        <option value="Farmacia">💊 Farmacia</option>
+                        <option value="Servicios">💡 Servicios</option>
+                        <option value="Limpieza">🧼 Limpieza</option>
+                        <option value="Hogar">🏠 Hogar</option>
+                        <option value="Otros">📦 Otros</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="detected-field-group">
+                    <label for="receipt-detected-date">Fecha:</label>
+                    <input type="date" id="receipt-detected-date" required>
+                  </div>
+
+                  <button type="submit" id="btn-confirm-receipt-register" class="btn-register-movement">
+                    ✅ Registrar Movimiento Automáticamente
+                  </button>
+                </form>
+              </div>
+            </div>
           </div>
-          <div class="kpi-card kpi-balance">
-            <span class="kpi-label">Balance</span>
-            <span class="kpi-value" id="kpi-balance">$0</span>
+
+          <!-- 3. BLOQUE: HISTORIAL DE BOLETAS ESCANEADAS -->
+          <div class="scanned-receipts-preview-card">
+            <div class="scanned-header">
+              <h4 class="scanned-title">🧾 Boletas Escaneadas Recientes</h4>
+              <span id="scanned-count-badge" class="scanned-badge">0 registradas</span>
+            </div>
+            <div id="scanned-receipts-grid" class="scanned-receipts-grid">
+              <p class="scanned-empty">Aún no has registrado boletas. ¡Saca tu primera foto arriba!</p>
+            </div>
           </div>
         </div>
 
-        <!-- 3 GRÁFICOS INTERACTIVOS (CHART.JS) -->
-        <div class="charts-wrapper">
-          <!-- Gráfico 1: Ingresos vs Gastos -->
-          <div class="chart-card">
-            <div class="chart-card-header">
-              <h3 class="chart-title">📊 1. Ingresos vs. Gastos</h3>
-              <span class="chart-tag">Global</span>
-            </div>
-            <div class="chart-canvas-container">
-              <canvas id="chart-income-expense"></canvas>
-            </div>
+        <!-- ====================================================
+             PESTAÑA 2: RESUMEN, BALANCE Y GRÁFICOS (CHART.JS)
+             ==================================================== -->
+        <div id="fin-tab-summary" class="finance-subtab-content">
+          <!-- Si no hay movimientos aún: Estado vacío limpio -->
+          <div id="fin-empty-state" class="fin-empty-summary">
+            <div class="empty-icon-wrap">📊</div>
+            <h3 class="empty-title">Sin movimientos registrados</h3>
+            <p class="empty-desc">Configura tu salario y escanea tus primeras boletas en la pestaña de <strong>Cargar Monto & Boletas</strong> para ver tu balance y gráficos analíticos aquí.</p>
+            <button type="button" id="btn-goto-scan-tab" class="btn-primary-outline">
+              📸 Ir a Cargar Monto & Boletas
+            </button>
           </div>
 
-          <!-- Gráfico 2: Gastos por Categoría -->
-          <div class="chart-card">
-            <div class="chart-card-header">
-              <h3 class="chart-title">🍩 2. Gastos Mensuales por Categoría</h3>
-              <span class="chart-tag">Distribución</span>
+          <!-- Contenido del Dashboard cuando hay movimientos -->
+          <div id="fin-active-dashboard" class="hidden">
+            <!-- Métricas del Balance -->
+            <div class="finance-kpi-grid">
+              <div class="kpi-card kpi-income">
+                <span class="kpi-label">Ingresos / Salario</span>
+                <span class="kpi-value" id="kpi-total-income">$0</span>
+              </div>
+              <div class="kpi-card kpi-expense">
+                <span class="kpi-label">Total Gastos</span>
+                <span class="kpi-value" id="kpi-total-expense">$0</span>
+              </div>
+              <div class="kpi-card kpi-balance">
+                <span class="kpi-label">Saldo Restante</span>
+                <span class="kpi-value" id="kpi-balance">$0</span>
+              </div>
             </div>
-            <div class="chart-canvas-container">
-              <canvas id="chart-category-expenses"></canvas>
-            </div>
-          </div>
 
-          <!-- Gráfico 3: Gastos Semanales (Evolución) -->
-          <div class="chart-card">
-            <div class="chart-card-header">
-              <h3 class="chart-title">📈 3. Gastos Semanales</h3>
-              <span class="chart-tag">Evolución</span>
-            </div>
-            <div class="chart-canvas-container">
-              <canvas id="chart-weekly-expenses"></canvas>
-            </div>
-          </div>
-        </div>
+            <!-- 3 GRÁFICOS INTERACTIVOS (CHART.JS) -->
+            <div class="charts-wrapper">
+              <!-- Gráfico 1: Ingresos vs Gastos -->
+              <div class="chart-card">
+                <div class="chart-card-header">
+                  <h3 class="chart-title">📊 1. Ingresos vs. Gastos</h3>
+                  <span class="chart-tag">Global</span>
+                </div>
+                <div class="chart-canvas-container">
+                  <canvas id="chart-income-expense"></canvas>
+                </div>
+              </div>
 
-        <!-- Lista de Últimas Transacciones -->
-        <div class="transactions-container">
-          <div class="transactions-header">
-            <h3 class="transactions-title">Últimos Movimientos</h3>
+              <!-- Gráfico 2: Gastos por Categoría -->
+              <div class="chart-card">
+                <div class="chart-card-header">
+                  <h3 class="chart-title">🍩 2. Gastos Mensuales por Categoría</h3>
+                  <span class="chart-tag">Distribución</span>
+                </div>
+                <div class="chart-canvas-container">
+                  <canvas id="chart-category-expenses"></canvas>
+                </div>
+              </div>
+
+              <!-- Gráfico 3: Gastos Semanales (Evolución) -->
+              <div class="chart-card">
+                <div class="chart-card-header">
+                  <h3 class="chart-title">📈 3. Gastos Semanales</h3>
+                  <span class="chart-tag">Evolución</span>
+                </div>
+                <div class="chart-canvas-container">
+                  <canvas id="chart-weekly-expenses"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <!-- Lista de Últimas Transacciones -->
+            <div class="transactions-container">
+              <div class="transactions-header">
+                <h3 class="transactions-title">Últimos Movimientos</h3>
+              </div>
+              <ul id="transactions-list" class="transactions-list">
+                <!-- Items de transacción dinámicos -->
+              </ul>
+            </div>
           </div>
-          <ul id="transactions-list" class="transactions-list">
-            <!-- Items de transacción dinámicos -->
-          </ul>
         </div>
       </section>
 
@@ -590,6 +769,75 @@
       </div>
     </div>
   </div>
+
+  <!-- Modal 4: Visor de Cámara en Vivo (WebRTC) -->
+  <div id="modal-live-camera" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-camera-card">
+      <div class="modal-camera-header">
+        <span>📸 Encuadra la Boleta / Ticket</span>
+        <button class="modal-close-btn" id="btn-close-camera">&times;</button>
+      </div>
+      <div class="camera-stream-wrapper">
+        <video id="camera-video-stream" autoplay playsinline muted></video>
+        <div class="camera-guide-box">
+          <div class="guide-corner top-left"></div>
+          <div class="guide-corner top-right"></div>
+          <div class="guide-corner bottom-left"></div>
+          <div class="guide-corner bottom-right"></div>
+          <span class="guide-hint">Centra el total y el ticket aquí</span>
+        </div>
+        <canvas id="camera-snapshot-canvas" class="hidden-canvas"></canvas>
+      </div>
+      <div class="camera-controls">
+        <button type="button" id="btn-switch-camera" class="btn-cam-control" title="Cambiar cámara">🔄</button>
+        <button type="button" id="btn-take-snapshot" class="btn-shutter" title="Capturar foto">
+          <div class="shutter-inner"></div>
+        </button>
+        <button type="button" id="btn-fallback-gallery" class="btn-cam-control" title="Subir foto">📁</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 5: Ver Foto de Boleta Registrada -->
+  <div id="modal-view-receipt" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-card modal-view-receipt-card">
+      <div class="modal-header">
+        <h3 id="receipt-modal-title">Comprobante de Boleta</h3>
+        <button class="modal-close-btn" data-close="modal-view-receipt">&times;</button>
+      </div>
+      <div class="receipt-full-preview">
+        <img id="receipt-modal-img" alt="Comprobante de Boleta">
+      </div>
+      <div class="receipt-modal-info" id="receipt-modal-info"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn-submit full-width" data-close="modal-view-receipt">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 6: Configurar Salario / Monto desde Home -->
+  <div id="modal-salary" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>💰 Configurar Salario / Monto</h3>
+        <button class="modal-close-btn" data-close="modal-salary">&times;</button>
+      </div>
+      <form id="form-home-salary" class="modal-form">
+        <div class="form-group">
+          <label for="home-salary-input">Monto o Salario Mensual ($)</label>
+          <input type="number" id="home-salary-input" placeholder="Ej: 350000" min="0" step="any" required>
+          <small class="form-hint">Este monto se registrará como tu base disponible mensual para calcular tu saldo restante.</small>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" data-close="modal-salary">Cancelar</button>
+          <button type="submit" class="btn-submit">Guardar Monto</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Contenedor de Notificaciones Toast Rápidas -->
+  <div id="app-toast-container" class="toast-container" aria-live="polite"></div>
 
   <!-- Scripts -->
   <script src="app.js"></script>
